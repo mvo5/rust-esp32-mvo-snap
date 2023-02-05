@@ -1,0 +1,37 @@
+name: rust-esp32-mvo
+version: 1.67.0.0
+summary: Rust with esp32 support
+description: |
+  The rust compiler with esp32 patches.
+
+  Please run:
+    `sudo snap alias rust-esp32-mvo.rustc rustc`
+    `sudo snap alias rust-esp32-mvo.cargo cargo`
+    `export PATH=$PATH:~/.cargo/bin`
+  to get a working rust. 
+base: core20
+confinement: classic
+grade: devel
+compression: lzo
+apps:
+  cargo:
+    command: bin/cargo
+  rustc:
+    command: bin/rustc
+  rustdoc:
+    command: bin/rustdoc
+parts:
+  rust-esp32:
+    plugin: nil
+    source: .
+    build-packages: [curl, ca-certificates]
+    override-build: |
+      URL=https://github.com/esp-rs/rust-build/releases/download/v1.67.0.0/rust-1.67.0.0-x86_64-unknown-linux-gnu.tar.xz
+      curl -L "$URL" -o $SNAPCRAFT_PART_BUILD/rust.tar.xz
+      cd $SNAPCRAFT_PART_BUILD
+      tar xvf rust.tar.xz
+      cd rust-nightly-x86_64-unknown-linux-gnu
+      ./install.sh --destdir=$SNAPCRAFT_PART_INSTALL --prefix=/snap/rust-esp32-mvo
+      mv $SNAPCRAFT_PART_INSTALL//snap/rust-esp32-mvo/* $SNAPCRAFT_PART_INSTALL
+      rmdir $SNAPCRAFT_PART_INSTALL/snap/rust-esp32-mvo
+      rmdir $SNAPCRAFT_PART_INSTALL/snap/
